@@ -8,21 +8,65 @@ import {
     FcFeedback,
 } from "react-icons/fc";
 import AuthService from "../../services/AuthService";
+import EnterpriseService from "../../services/EnterpriseService";
+import FileService from "../../services/FileService";
 
 export default class SideNav2 extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            enterprise: {
+                id: "",
+                contact: "",
+                address: "",
+                website: "",
+                description: "",
+                name: "",
+                user: {
+                    id: "",
+                    fullname: "",
+                    username: "",
+                    phone: "",
+                    email: "",
+
+                    image: "",
+                    roles: [
+                        {
+                            id: 2,
+                            name: "ROLE_ENTERPRISE",
+                        },
+                    ],
+                },
+            },
+        };
+        this.logout = this.logout.bind(this);
+    }
+
+    componentDidMount() {
+        try {
+            const idUser = AuthService.getCurrentUser().id;
+
+            EnterpriseService.getByUser(idUser).then((res) => {
+                this.setState({ enterprise: res.data });
+
+                localStorage.setItem("id", this.state.enterprise.id);
+            });
+        } catch (error) {}
+    }
     logout() {
         AuthService.logout();
     }
     render() {
+        const enterprise = this.state.enterprise;
         return (
             <>
                 <ul>
                     <li>
                         <img
-                            src="../../../img/jobseeker_avt/default.png"
+                            src={FileService.downloadFile(
+                                enterprise.user.image
+                            )}
                             alt=""></img>
-
-                        <h5>Ten Cong Ty</h5>
                     </li>
                     <hr />
                     <div style={{ textAlign: "center" }}>

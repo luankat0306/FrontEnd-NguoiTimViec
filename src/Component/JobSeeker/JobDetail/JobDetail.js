@@ -7,6 +7,7 @@ import JobSavedService from "../../../services/JobSavedService";
 import AuthService from "../../../services/AuthService";
 import CandidateService from "../../../services/CandidateService";
 import ResumeService from "../../../services/ResumeService";
+import FileService from "../../../services/FileService";
 
 export default class JobDetail extends Component {
     constructor(props) {
@@ -62,17 +63,19 @@ export default class JobDetail extends Component {
         const {
             match: { params },
         } = this.props;
-        const applicantId = localStorage.getItem("applicant");
+        const applicantId = localStorage.getItem("id");
 
         JobService.getJob(params.id)
             .then((res) => {
                 this.setState({ job: res.data });
             })
             .then(() => {
-                const token = AuthService.getCurrentUser();
-                if (token) {
-                    this.setState({ auth: true });
-                }
+                try {
+                    const token = AuthService.getCurrentUser();
+                    if (token.roles.includes("ROLE_USER")) {
+                        this.setState({ auth: true });
+                    }
+                } catch (error) {}
             });
 
         ResumeService.getResumeByApplicant(applicantId).then((res) => {
@@ -86,14 +89,26 @@ export default class JobDetail extends Component {
             job: { id: jobId },
         };
         CandidateService.sendCV(cv)
-            .then(() => this.setState({ success: "Nộp hồ sơ thành công" }))
+            .then(
+                () => this.setState({ success: "Nộp hồ sơ thành công" }),
+                (error) => {
+                    this.setState({
+                        error:
+                            (error.response &&
+                                error.response.data &&
+                                error.response.data.message) ||
+                            error.message ||
+                            error.toString(),
+                    });
+                }
+            )
             .catch((error) =>
                 this.setState({ error: "Vui lòng tạo hồ sơ trước" })
             );
     }
 
     saveCV(jobId) {
-        const applicantId = localStorage.getItem("applicant");
+        const applicantId = localStorage.getItem("id");
         const cv = {
             applicant: { id: applicantId },
             job: { id: jobId },
@@ -114,10 +129,14 @@ export default class JobDetail extends Component {
                             {this.state.auth && (
                                 <Row>
                                     <Col style={{ textAlign: "right" }}>
-                                        <Button variant="success">
+                                        <Button
+                                            variant="success"
+                                            onClick={() => this.sendCV(job.id)}>
                                             Nộp Hồ Sơ
                                         </Button>
-                                        <Button variant="primary">
+                                        <Button
+                                            variant="primary"
+                                            onClick={() => this.saveCV(job.id)}>
                                             Lưu Công Việc
                                         </Button>
                                     </Col>
@@ -127,7 +146,9 @@ export default class JobDetail extends Component {
                                 <Col className="jobdetail-col">
                                     <div className="jobdetail-img">
                                         <img
-                                            src="../../../img/employer_avt/samsung.png"
+                                            src={FileService.downloadFile(
+                                                job.enterprise.user.image
+                                            )}
                                             alt=""></img>
                                     </div>
 
@@ -203,17 +224,15 @@ export default class JobDetail extends Component {
                             </Row>
                         </Container>
                     </div>
+                    <br />
                     {success !== "" && (
                         <Alert style={{ margin: "5px 70px" }} variant="success">
                             {success}
                         </Alert>
                     )}
                     {error !== "" && (
-                        <Alert variant="danger">
+                        <Alert style={{ margin: "5px 70px" }} variant="danger">
                             {error}
-                            <Alert.Link href="./quan-ly-tai-khoan">
-                                Tại trang quản lý tài khoản
-                            </Alert.Link>
                         </Alert>
                     )}
                 </div>

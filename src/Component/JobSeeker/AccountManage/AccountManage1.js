@@ -14,6 +14,7 @@ import {
 import ApplicantService from "../../../services/ApplicantService";
 import AuthService from "../../../services/AuthService";
 import ResumeService from "../../../services/ResumeService";
+import FileService from "../../../services/FileService";
 
 export default class AccountManage1 extends Component {
     constructor(props) {
@@ -86,9 +87,11 @@ export default class AccountManage1 extends Component {
                             <div className="edit-avatar">
                                 <img
                                     className="avatar"
-                                    src="../../../img/jobseeker_avt/default.png"
+                                    src={FileService.downloadFile(
+                                        applicant.user.image
+                                    )}
                                     alt=""></img>
-                                <ChangeAvatar />
+                                <ChangeAvatar id={applicant.user.id} />
                             </div>
                             <h4>{applicant.user.fullname}</h4>
                             <p>{resume.career.name}</p>
@@ -124,6 +127,7 @@ export default class AccountManage1 extends Component {
                                             Email{" "}
                                             <ChangeEmail
                                                 idUser={applicant.user.id}
+                                                email={applicant.user.email}
                                             />
                                         </h4>
                                         <p>{applicant.user.email}</p>
@@ -144,7 +148,11 @@ export default class AccountManage1 extends Component {
                                     </div>
                                     <div className="data">
                                         <h4>Ngày Sinh</h4>
-                                        <p>{applicant.birthday}</p>
+                                        <p>
+                                            {new Date(
+                                                applicant.birthday
+                                            ).toLocaleDateString()}
+                                        </p>
                                     </div>
                                     <div className="data">
                                         <h4>Giới Tính</h4>

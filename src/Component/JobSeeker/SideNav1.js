@@ -4,41 +4,56 @@ import { Button } from "react-bootstrap";
 import { FcSearch, FcBusinessman, FcOk, FcFilingCabinet } from "react-icons/fc";
 import AuthService from "../../services/AuthService";
 import ApplicantService from "../../services/ApplicantService";
+import FileService from "../../services/FileService";
 
 export default class SideNav1 extends Component {
     constructor(props) {
         super(props);
         this.state = {
             applicant: { user: { fullname: "" } },
+            error: false,
         };
         this.logout = this.logout.bind(this);
     }
 
     componentDidMount() {
-        const idUser = AuthService.getCurrentUser().id;
-        ApplicantService.getApplicantByUserId(idUser).then((res) => {
-            this.setState({ applicant: res.data });
-            localStorage.setItem(
-                "applicant",
-                JSON.stringify(this.state.applicant.id)
-            );
-        });
+        try {
+            const user = AuthService.getCurrentUser();
+            if (user.roles.includes("ROLE_USER")) {
+                ApplicantService.getApplicantByUserId(user.id).then((res) => {
+                    this.setState({ applicant: res.data });
+                    localStorage.setItem(
+                        "id",
+                        JSON.stringify(this.state.applicant.id)
+                    );
+                });
+            } else {
+                this.setState({ error: true });
+            }
+        } catch (error) {
+            this.setState({ error: true });
+        }
     }
     logout() {
         AuthService.logout();
     }
     render() {
-        const applicant = this.state.applicant;
+        const { error, applicant } = this.state;
         return (
             <>
                 <ul>
                     <li>
                         <img
-                            src="../../../img/jobseeker_avt/default.png"
+                            src={
+                                error === false
+                                    ? FileService.downloadFile(
+                                          applicant.user.image
+                                      )
+                                    : "../../../img/jobseeker_avt/default.png"
+                            }
                             alt=""></img>
-
                         <h5>
-                            {applicant.id !== {} ? applicant.user.fullname : ""}{" "}
+                            {error === false ? applicant.user.fullname : ""}{" "}
                         </h5>
                     </li>
                     <hr />

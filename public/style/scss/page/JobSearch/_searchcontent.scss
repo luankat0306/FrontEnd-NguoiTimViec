@@ -11,6 +11,13 @@
   position: relative;
   top: 5vh;
 
+  .not-found{
+    font-size: x-large;
+    text-align: center;
+    font-weight: bold;
+    top: 45%
+  }
+
   .content {
     background: whitesmoke;
     text-align: center;
@@ -19,6 +26,7 @@
     img {
       width: 200px;
       height: 200px;
+      object-fit: contain;
       border-bottom: 1px solid rgba(0, 0, 0, 0.125);
     }
     a {
@@ -57,6 +65,7 @@
     img {
       width: 200px;
       height: 200px;
+      object-fit: contain;
       border-bottom: 1px solid rgba(0, 0, 0, 0.125);
       border-radius: 12px;
     }
@@ -73,6 +82,8 @@
         img {
           width: 200px;
           height: 200px;
+          padding: 10px;
+          object-fit: contain;
           border: none;
           float: left;
           box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);

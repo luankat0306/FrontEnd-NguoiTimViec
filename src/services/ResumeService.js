@@ -6,6 +6,9 @@ class ResumeService {
         return Axios.get(API_URL, authHeader());
     }
 
+    getResume(id) {
+        return Axios.get(API_URL + "/" + id, authHeader());
+    }
     getResumeByApplicant(applicantId) {
         return Axios.get(API_URL + "/applicants/" + applicantId, authHeader());
     }

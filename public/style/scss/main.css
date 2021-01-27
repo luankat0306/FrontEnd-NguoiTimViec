@@ -140,6 +140,9 @@
 .body .company-box img {
   width: 250px;
   height: 250px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  padding: 10px;
   border: 2px solid rgba(0, 0, 0, 0.125);
   -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
           box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
@@ -357,6 +360,13 @@
   top: 5vh;
 }
 
+.box .not-found {
+  font-size: x-large;
+  text-align: center;
+  font-weight: bold;
+  top: 45%;
+}
+
 .box .content {
   background: whitesmoke;
   text-align: center;
@@ -368,6 +378,8 @@
 .box .content img {
   width: 200px;
   height: 200px;
+  -o-object-fit: contain;
+     object-fit: contain;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 
@@ -411,6 +423,8 @@
 .box .content-jobdetail img {
   width: 200px;
   height: 200px;
+  -o-object-fit: contain;
+     object-fit: contain;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 12px;
 }
@@ -429,6 +443,9 @@
 .box .content-jobdetail .jobdetail-col .jobdetail-img img {
   width: 200px;
   height: 200px;
+  padding: 10px;
+  -o-object-fit: contain;
+     object-fit: contain;
   border: none;
   float: left;
   -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
@@ -533,7 +550,9 @@ ul li img {
   border-radius: 50%;
   width: 100px;
   height: 100px;
-  background: black;
+  background: white;
+  -o-object-fit: contain;
+     object-fit: contain;
   display: block;
   margin-top: 10px;
   margin-left: auto;
@@ -618,11 +637,13 @@ ul li a:hover:not(.active) {
 
 .wrapper .left .avatar {
   margin-bottom: 10px;
-  padding: 5px;
+  padding: 10px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   width: 200px;
   height: 200px;
+  -o-object-fit: contain;
+     object-fit: contain;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

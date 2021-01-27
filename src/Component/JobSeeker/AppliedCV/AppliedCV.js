@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import { Row, Col, Card, Button, CardColumns } from "react-bootstrap";
 import ResumeService from "../../../services/ResumeService";
 import CandidateService from "../../../services/CandidateService";
+import FileService from "../../../services/FileService";
 
 export default class AppliedCV extends Component {
     constructor(props) {
@@ -17,7 +18,7 @@ export default class AppliedCV extends Component {
         this.deleteCandidate = this.deleteCandidate.bind(this);
     }
     componentDidMount() {
-        const applicantId = localStorage.getItem("applicant");
+        const applicantId = localStorage.getItem("id");
         ResumeService.getResumeByApplicant(applicantId).then((res) => {
             this.setState({ resume: res.data });
 
@@ -42,12 +43,14 @@ export default class AppliedCV extends Component {
                 <JobSeekerIndex />
                 <div className="page-content">
                     <div className="box">
-                        <CardColumns>
+                        <CardColumns style={{ columnCount: "2" }}>
                             {jobApplieds.map((jobApplied) => (
                                 <Card className="content">
                                     <Card.Img
                                         variant="top"
-                                        src="../../../img/employer_avt/samsung.png"
+                                        src={FileService.downloadFile(
+                                            jobApplied.job.enterprise.user.image
+                                        )}
                                     />
                                     <Card.Body>
                                         <Card.Title>

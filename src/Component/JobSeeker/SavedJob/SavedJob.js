@@ -3,6 +3,7 @@ import JobSeekerIndex from "../JobSeekerIndex";
 import { NavLink } from "react-router-dom";
 import { Row, Col, Card, Button, CardColumns, Alert } from "react-bootstrap";
 import JobSavedService from "../../../services/JobSavedService";
+import FileService from "../../../services/FileService";
 
 export default class SavedJob extends Component {
     constructor(props) {
@@ -15,7 +16,7 @@ export default class SavedJob extends Component {
         this.deleteJobSaved = this.deleteJobSaved.bind(this);
     }
     componentDidMount() {
-        const applicantId = localStorage.getItem("applicant");
+        const applicantId = localStorage.getItem("id");
         JobSavedService.getJobSavedByApplicant(applicantId).then((res) =>
             this.setState({ jobSaveds: res.data })
         );
@@ -36,12 +37,14 @@ export default class SavedJob extends Component {
                 <JobSeekerIndex />
                 <div className="page-content">
                     <div className="box">
-                        <CardColumns>
+                        <CardColumns style={{ columnCount: "2" }}>
                             {jobSaveds.map((jobSaved) => (
                                 <Card className="content">
                                     <Card.Img
                                         variant="top"
-                                        src="../../../img/employer_avt/samsung.png"
+                                        src={FileService.downloadFile(
+                                            jobSaved.job.enterprise.user.image
+                                        )}
                                     />
                                     <Card.Body>
                                         <Card.Title>

@@ -23,7 +23,8 @@ ul {
       border-radius: 50%;
       width: 100px;
       height: 100px;
-      background: black;
+      background: white;
+      object-fit: contain;
       display: block;
       margin-top: 10px;
       margin-left: auto;
@@ -99,11 +100,12 @@ ul {
     }
     .avatar {
       margin-bottom: 10px;
-      padding: 5px;
+      padding: 10px;
       border-radius: 12px;
       border: 1px solid rgba(0, 0, 0, 0.125);
       width: 200px;
       height: 200px;
+      object-fit: contain;
       display: flex;
       align-items: center;
       background: #f8f9fa;

@@ -16,6 +16,7 @@ import ResumeService from "../../../services/ResumeService";
 import CareerService from "../../../services/CareerService";
 import { useEffect } from "react";
 import { FaIgloo } from "react-icons/fa";
+import FileService from "../../../services/FileService";
 
 export function ChangeEmail(props) {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -98,6 +99,7 @@ export function ChangeEmail(props) {
                                 plaintext
                                 readOnly
                                 defaultValue="email@example.com"
+                                value={props.email}
                             />
                         </Form.Group>
                         <Form.Group controlId="formBasicPassword">
@@ -509,7 +511,7 @@ export function ChangeCV(props) {
     const [foreignLanguage, setForeignLanguage] = useState("");
     const [wage, setWage] = useState();
     const [monetaryUnit, setMonetaryUnit] = useState("");
-    const [career, setCareer] = useState({});
+    const [careerId, setCareerId] = useState("");
     const [resumeId, setResumeId] = useState();
     const [careers, setCareers] = useState([]);
 
@@ -526,12 +528,12 @@ export function ChangeCV(props) {
                 setJobType(resume.jobType);
                 setForeignLanguage(resume.foreignLanguage);
                 const valuesWage = resume.wage.split(" ");
-                const monetagy = valuesWage[1]
-                    ? resume.wage.substr(resume.wage.indexOf(" ") + 1)
-                    : "";
-                setMonetaryUnit(monetagy);
-                setWage(Number.parseInt(resume.wage));
-                setCareer(resume.career);
+                setMonetaryUnit(valuesWage[valuesWage.length - 1]);
+                //
+                if (valuesWage.length === 2) {
+                    setWage(valuesWage[0].replaceAll(".", ""));
+                }
+                setCareerId(resume.career.id);
             });
             CareerService.getCareers().then((res) => setCareers(res.data));
         }
@@ -560,7 +562,7 @@ export function ChangeCV(props) {
     };
 
     const changeCareerHandler = (e) => {
-        setCareer(e.target.value);
+        setCareerId(e.target.value);
     };
 
     const changeMonetaryUnitHandler = (e) => {
@@ -577,9 +579,9 @@ export function ChangeCV(props) {
                 desiredVacancy: desiredVacancy,
                 experience: experience,
                 education: education,
-                career: career,
+                career: { id: careerId },
                 foreignLanguage: foreignLanguage,
-                wage: wage + " " + monetaryUnit,
+                wage: Intl.NumberFormat().format(wage) + " " + monetaryUnit,
                 jobType: jobType,
                 applicant: { id: props.id },
             };
@@ -617,7 +619,7 @@ export function ChangeCV(props) {
         setJobType("");
         setForeignLanguage("");
         setWage("");
-        setCareer("");
+        setCareerId("");
         setMonetaryUnit("");
         setError("");
         setShow(true);
@@ -685,16 +687,9 @@ export function ChangeCV(props) {
                                 <Form.Control
                                     as="select"
                                     onChange={changeCareerHandler}
+                                    value={careerId}
                                     required>
-                                    {career !== "" ? (
-                                        <option value={career.id}>
-                                            {career.name}
-                                        </option>
-                                    ) : (
-                                        <option value="">
-                                            Chọn Ngành Nghề
-                                        </option>
-                                    )}
+                                    <option value="">Chọn Ngành Nghề</option>
 
                                     {careers.map((career, index) => (
                                         <option value={career.id} key={index}>
@@ -767,8 +762,8 @@ export function ChangeCV(props) {
                             <Form.Label>Mức Lương Mong Muốn</Form.Label>
                             <InputGroup className="mb-3">
                                 <FormControl
-                                    type="number"
-                                    min="1"
+                                    type="text"
+                                    pattern="(?=.*[0-9]).{1,}"
                                     value={wage}
                                     onChange={changeWageHandler}
                                     required
@@ -776,23 +771,20 @@ export function ChangeCV(props) {
                                 <Form.Control
                                     as="select"
                                     onChange={changeMonetaryUnitHandler}
-                                    onSelect={monetaryUnit}
+                                    value={monetaryUnit}
                                     required>
-                                    {monetaryUnit !== "" ? (
-                                        <option value={monetaryUnit}>
-                                            {monetaryUnit}
-                                        </option>
-                                    ) : (
-                                        <option value="">
-                                            Chọn Đơn Vị Tiền Tệ
-                                        </option>
-                                    )}
+                                    <option value="">
+                                        Chọn Đơn Vị Tiền Tệ
+                                    </option>
 
                                     <option value="VNĐ">VNĐ</option>
                                     <option value="USD">USD</option>
                                 </Form.Control>
                             </InputGroup>
                         </Form.Group>
+                        {error !== "" && (
+                            <Alert variant="danger">{error}</Alert>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="success" type="submit">
@@ -906,6 +898,9 @@ export function ChangeSocialNetwork(props) {
                                 onChange={changeIgHandler}
                             />
                         </Form.Group>
+                        {error !== "" && (
+                            <Alert variant="danger">{error}</Alert>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="success" type="submit">
@@ -918,11 +913,55 @@ export function ChangeSocialNetwork(props) {
     );
 }
 
-export function ChangeAvatar() {
+export function ChangeAvatar(props) {
     const [show, setShow] = useState(false);
+    const [validated, setValidated] = useState(false);
+    const [error, setError] = useState("");
+    const [i, setI] = useState();
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const changeImage = (e) => {
+        setI(e.target.files);
+    };
+
+    const handleSubmit = (event) => {
+        const form = event.currentTarget;
+        event.preventDefault();
+        if (form.checkValidity() === false) {
+            event.stopPropagation();
+        } else if (form.checkValidity() === true) {
+            var image = new FormData();
+            image.append("file", i[0]);
+
+            FileService.uploadFile(props.id, image).then(
+                () => {
+                    setValidated(false);
+                    setShow(false);
+                    window.location.reload();
+                },
+                (error) => {
+                    setError(
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                            error.message ||
+                            error.toString()
+                    );
+                }
+            );
+        }
+
+        setValidated(true);
+    };
+
+    const handleClose = () => {
+        setValidated(false);
+        setShow(false);
+    };
+
+    const handleShow = () => {
+        setError("");
+        setShow(true);
+    };
 
     return (
         <>
@@ -931,25 +970,31 @@ export function ChangeAvatar() {
             </Button>
 
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Đổi Ảnh Đại Diện</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
+                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Đổi Ảnh Đại Diện</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
                         <Form.Group>
                             <Form.File
+                                type="file"
                                 accept="image/*"
                                 id="exampleFormControlFile1"
+                                name="file"
                                 label="Chọn Ảnh Đại Diện"
+                                onChange={changeImage}
                             />
                         </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="success" onClick={handleClose}>
-                        Lưu Thay Đổi
-                    </Button>
-                </Modal.Footer>
+                        {error !== "" && (
+                            <Alert variant="danger">{error}</Alert>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="success" type="submit">
+                            Lưu Thay Đổi
+                        </Button>
+                    </Modal.Footer>
+                </Form>
             </Modal>
         </>
     );

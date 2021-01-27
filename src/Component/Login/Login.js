@@ -33,6 +33,7 @@ export default class Login extends Component {
         AuthService.login(username, password).then(
             (res) => {
                 if (res.data.accessToken) {
+                    localStorage.removeItem("applicant");
                     localStorage.setItem("user", JSON.stringify(res.data));
 
                     if (res.data.roles.includes("ROLE_USER")) {
