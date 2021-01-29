@@ -5,6 +5,7 @@ import { Row, Col, Card, Button, CardColumns } from "react-bootstrap";
 import ResumeService from "../../../services/ResumeService";
 import CandidateService from "../../../services/CandidateService";
 import FileService from "../../../services/FileService";
+import { FcCheckmark } from "react-icons/fc";
 
 export default class AppliedCV extends Component {
     constructor(props) {
@@ -109,6 +110,32 @@ export default class AppliedCV extends Component {
                                     </Card.Body>
                                     <Card.Footer>
                                         <Row>
+                                            {jobApplied.status !==
+                                                "Đang Chờ" && (
+                                                <Col>
+                                                    {jobApplied.status ===
+                                                    "Đã Chấp Thuận" ? (
+                                                        <p
+                                                            style={{
+                                                                color: "green",
+                                                                marginBottom:
+                                                                    "0px",
+                                                            }}>
+                                                            <FcCheckmark /> Đã
+                                                            tiếp nhận{" "}
+                                                        </p>
+                                                    ) : (
+                                                        <p
+                                                            style={{
+                                                                color: "red",
+                                                                marginBottom:
+                                                                    "0px",
+                                                            }}>
+                                                            Bị từ chối
+                                                        </p>
+                                                    )}
+                                                </Col>
+                                            )}
                                             <Col>
                                                 <Button
                                                     variant="outline-danger"

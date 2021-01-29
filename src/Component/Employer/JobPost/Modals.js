@@ -87,10 +87,11 @@ export function JobPosting() {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         } else if (form.checkValidity() === true) {
-            if (wage !== "") {
-                Intl.NumberFormat().format(wage);
-            }
             const id = localStorage.getItem("id");
+            let wageFormat = wage;
+            if (wage !== "") {
+                wageFormat = Intl.NumberFormat().format(wage);
+            }
             let job = {
                 enterprise: {
                     id: id,
@@ -102,7 +103,7 @@ export function JobPosting() {
                     id: career,
                 },
                 province: province,
-                wage: wage + " " + monetaryUnit,
+                wage: wageFormat + " " + monetaryUnit,
                 description: description,
                 endDate: endDate,
                 address: address,
